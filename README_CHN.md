@@ -142,7 +142,7 @@ make CONFIG_PREFIX=./initramfs install
 
 ```bash  
   cd initramfs
-  find . | cpio -o -H newc | gzip > ./initramfs.cpio.gz
+  find . -not -name 'initramfs.cpio.gz' | cpio -o -H newc | gzip > ./initramfs.cpio.gz
 ```
 
 # U-Boot 启动示例(以飞腾 E2000D 为例)  
