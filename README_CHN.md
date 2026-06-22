@@ -86,7 +86,7 @@ make -j$(nproc) CROSS_COMPILE=aarch64-linux-gnu-
 file busybox  
 #应输出: busybox: ELF 64-bit LSB executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, for GNU/Linux 3.7.0, stripped  
 
-**静态编译（initramfs 必需）：**
+**静态编译（initramfs 必需！！！）:**
 
 ```bash
 # 在 menuconfig 中设置：
@@ -112,7 +112,7 @@ mkdir -p ./initramfs/{bin,sbin,etc/init.d,dev,proc,sys,tmp,root}
 make CONFIG_PREFIX=./initramfs install
 ```  
 
-## 创建 /init 脚本  
+## 创建 /init 脚本(仓库中默认已创建, 无需重复)  
 
 ```bash
   cat > ./initramfs/init << 'EOF'
@@ -157,7 +157,7 @@ tftpboot 0x90200000 Image; tftpboot 0x92000000 initramfs.cpio.gz; tftpboot 0x900
 setenv bootargs console=ttyAMA1,115200 earlycon=pl011,0x2800d000  
 
 #启动镜像  
-setenv booti 0x90200000 0x92000000:12227d 0x90000000
+booti 0x90200000 0x92000000:{initramfs_size} 0x90000000
 ```  
 
 ## 当前版本状态
@@ -302,7 +302,14 @@ setenv booti 0x90200000 0x92000000:12227d 0x90000000
 | `strace` | 不支持 | 需交叉编译独立二进制 |
 | `perf` | 不支持 | 需配合内核从 Linux 源码编译 |
 | `tracepath` | `traceroute` | `traceroute 8.8.8.8` |
-| `nslookup` | `nslookup`（需编译时启用） | `nslookup www.example.com`（在 menuconfig → Networking Utilities 中启用） |  
+| `nslookup` | `nslookup`（需编译时启用） | `nslookup www.example.com`（在 menuconfig → Networking Utilities 中启用） |    
+
+## 其他  
+  
+  若在构建时出错 **error: 'IFLA_CAN_TERMINATION' undeclared(first use in this function)**，有两种方案解决：  
+
+  - 方案一：提升编译器版本，实测会在 **gcc 7.5.x** 上出现  
+  - 方案二：在 **.config** 文件中手动禁用 **CONFIG_FEATURE_IP_LINK_CAN** 选项或者直接将其删除
 
 
 
